@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Sign In – Foodie Delight{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <i class="fas fa-utensils"></i>
+            <h2>Welcome Back!</h2>
+            <p>Sign in to order your favourite food or manage the restaurant</p>
+        </div>
+
+        {% if error %}
+        <div class="auth-error"><i class="fas fa-exclamation-circle"></i> {{ error }}</div>
+        {% endif %}
+
+        <div id="loginError" class="auth-error" style="display:none">
+            <i class="fas fa-exclamation-circle"></i> <span id="loginErrorMsg"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <div class="input-icon-wrap">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="login_email" placeholder="you@example.com" autocomplete="email">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-icon-wrap">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="login_password" placeholder="Your password" autocomplete="current-password">
+            </div>
+        </div>
+
+        <button class="auth-btn" id="loginBtn">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+
+        <!-- Quick Demo Credentials Box -->
+        <div style="background:#f8fafc; border:1px dashed #cbd5e1; border-radius:10px; padding:12px; margin-top:20px; font-size:0.82rem; text-align:left;">
+            <p style="font-weight:700; color:var(--dark); margin-bottom:4px"><i class="fas fa-key" style="color:var(--primary)"></i> Quick Demo Accounts:</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span><strong>Admin:</strong> admin@foodiedelight.com / admin123</span>
+                <button type="button" onclick="fillCreds('admin@foodiedelight.com', 'admin123')" style="border:none;background:var(--primary-soft);color:var(--primary);padding:3px 8px;border-radius:4px;font-weight:700;cursor:pointer">Fill</button>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+                <span><strong>Customer:</strong> as@gmail.com / (your password)</span>
+            </div>
+        </div>
+
+        <p class="auth-divider">Don't have an account? <a href="/register">Register here</a></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const nextUrl = "{{ next or '' }}";
+
+function fillCreds(e, p) {
+    document.getElementById('login_email').value = e;
+    document.getElementById('login_password').value = p;
+}
+
+async function doLogin() {
+    const email    = document.getElementById('login_email').value.trim();
+    const password = document.getElementById('login_password').value;
+    const errBox   = document.getElementById('loginError');
+    const errMsg   = document.getElementById('loginErrorMsg');
+    const btn      = document.getElementById('loginBtn');
+
+    errBox.style.display = 'none';
+    if (!email || !password) {
+        errMsg.textContent = 'Please enter both your email and password.';
+        errBox.style.display = 'flex';
+        return;
+    }
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+
+    try {
+        const res = await fetch('/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, next: nextUrl })
+        });
+        const data = await res.json();
+        if (data.success) {
+            window.location.href = data.redirect || nextUrl || '/';
+        } else {
+            errMsg.textContent = data.error || 'Invalid credentials.';
+            errBox.style.display = 'flex';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+        }
+    } catch(e) {
+        errMsg.textContent = 'Network error. Please try again.';
+        errBox.style.display = 'flex';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+    }
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('login_password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('login_email').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+</script>
+{% endblock %}

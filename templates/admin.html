@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal – Foodie Delight</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+
+    <!-- Top Admin Header -->
+    <header class="admin-topbar">
+        <div class="admin-topbar-left">
+            <button class="mobile-sidebar-toggle" id="sidebarToggle"><i class="fas fa-bars"></i></button>
+            <div class="admin-brand">
+                <i class="fas fa-utensils"></i>
+                <span>Foodie Delight <strong>Admin</strong></span>
+            </div>
+        </div>
+        <div class="admin-topbar-right">
+            <a href="/" class="btn-store-link" target="_blank"><i class="fas fa-external-link-alt"></i> View Restaurant</a>
+            <div class="admin-user-pill">
+                <i class="fas fa-shield-alt"></i>
+                <span>{{ user.full_name }}</span>
+                <a href="/logout" class="admin-logout-btn" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <nav class="admin-nav">
+                <button class="admin-nav-item active" data-tab="overview">
+                    <i class="fas fa-chart-line"></i> <span>Overview</span>
+                </button>
+                <button class="admin-nav-item" data-tab="orders">
+                    <i class="fas fa-shopping-bag"></i> <span>Orders</span>
+                    <span class="badge-counter" id="badgePendingOrders">0</span>
+                </button>
+                <button class="admin-nav-item" data-tab="menu">
+                    <i class="fas fa-pizza-slice"></i> <span>Menu Items</span>
+                </button>
+                <button class="admin-nav-item" data-tab="reservations">
+                    <i class="fas fa-calendar-check"></i> <span>Reservations</span>
+                </button>
+                <button class="admin-nav-item" data-tab="messages">
+                    <i class="fas fa-envelope"></i> <span>Inquiries</span>
+                    <span class="badge-counter" id="badgeMessages">0</span>
+                </button>
+                <button class="admin-nav-item" data-tab="users">
+                    <i class="fas fa-users"></i> <span>Customers</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Restaurant Operations v2.0</p>
+                <small>Foodie Delight Management</small>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <!-- ── OVERVIEW TAB ────────────────────────────────────────────── -->
+            <section class="admin-tab-pane active" id="pane-overview">
+                <div class="pane-header">
+                    <div>
+                        <h2>Dashboard Overview</h2>
+                        <p>Live metrics and performance summary</p>
+                    </div>
+                    <button class="btn-refresh" onclick="loadAllAdminData()"><i class="fas fa-sync-alt"></i> Refresh</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon rev"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Revenue</span>
+                            <h3 class="stat-val" id="statRevenue">$0.00</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orders"><i class="fas fa-receipt"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Orders</span>
+                            <h3 class="stat-val" id="statOrders">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon pending"><i class="fas fa-clock"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending Orders</span>
+                            <h3 class="stat-val" id="statPending">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon delivered"><i class="fas fa-check-double"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Delivered Orders</span>
+                            <h3 class="stat-val" id="statDelivered">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon dishes"><i class="fas fa-utensils"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Menu Dishes</span>
+                            <h3 class="stat-val" id="statItems">0</h3>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon res"><i class="fas fa-calendar-alt"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Table Bookings</span>
+                            <h3 class="stat-val" id="statReservations">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Orders Preview -->
+                <div class="admin-card-box" style="margin-top:25px">
+                    <div class="card-box-header">
+                        <h3><i class="fas fa-clock"></i> Recent Customer Orders</h3>
+                        <button class="btn-text-link" onclick="switchTab('orders')">View All Orders &rarr;</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="admin-table" id="recentOrdersTable">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody><tr><td colspan="6" style="text-align:center">Loading recent orders...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── ORDERS TAB ──────────────────────────────────────────────── -->
+            <section class="admin-tab-pane" id="pane-orders">
+                <div class="pane-header">
+                    <div>
+                        <h2>Customer Orders</h2>
+                        <p>Track, manage, and update live restaurant orders</p>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="status-filter-pills" id="orderStatusFilters">
+                        <button class="pill active" data-status="all">All</button>
+                        <button class="pill" data-status="pending">Pending</button>
+                        <button class="pill" data-status="confirmed">Confirmed</button>
+                        <button class="pill" data-status="preparing">Preparing</button>
+                        <button class="pill" data-status="out_for_delivery">Out for Delivery</button>
+                        <button class="pill" data-status="delivered">Delivered</button>
+                        <button class="pill" data-status="cancelled">Cancelled</button>
+                    </div>
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="orderSearchInput" placeholder="Search order ID or customer...">
+                    </div>
+                </div>
+
+                <div class="admin-card-box">
+                    <div class="table-responsive">
+                        <table class="admin-table" id="ordersMasterTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer & Contact</th>
+                                    <th>Items Ordered</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Placed On</th>
+                                    <th>Update Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersMasterBody">
+                                <tr><td colspan="8" style="text-align:center">Loading orders...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── MENU ITEMS TAB ─────────────────────────────────────────── -->
+            <section class="admin-tab-pane" id="pane-menu">
+                <div class="pane-header">
+                    <div>
+                        <h2>Menu Management</h2>
+                        <p>Add, edit, or adjust availability of all culinary items</p>
+                    </div>
+                    <button class="btn-primary" onclick="openAddMenuModal()"><i class="fas fa-plus-circle"></i> Add New Dish</button>
+                </div>
+
+                <div class="action-bar">
+                    <div class="status-filter-pills" id="menuCategoryFilters">
+                        <button class="pill active" data-cat="all">All</button>
+                        <button class="pill" data-cat="pizza">Pizzas</button>
+                        <button class="pill" data-cat="burger">Burgers</button>
+                        <button class="pill" data-cat="sandwich">Sandwiches</button>
+                        <button class="pill" data-cat="pasta">Pastas & Mains</button>
+                        <button class="pill" data-cat="starters">Starters</button>
+                        <button class="pill" data-cat="desserts">Desserts & Drinks</button>
+                    </div>
+                    <div class="search-wrap">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="menuSearchInput" placeholder="Search dishes...">
+                    </div>
+                </div>
+
+                <div class="admin-card-box">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Dish Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Tags</th>
+                                    <th>Prep Time</th>
+                                    <th>In Stock</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="menuMasterBody">
+                                <tr><td colspan="8" style="text-align:center">Loading menu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── RESERVATIONS TAB ────────────────────────────────────────── -->
+            <section class="admin-tab-pane" id="pane-reservations">
+                <div class="pane-header">
+                    <div>
+                        <h2>Table Bookings & Reservations</h2>
+                        <p>Manage dine-in seating and special guest requests</p>
+                    </div>
+                </div>
+
+                <div class="admin-card-box">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Booking #</th>
+                                    <th>Guest Name</th>
+                                    <th>Contact</th>
+                                    <th>Party Size</th>
+                                    <th>Date & Time</th>
+                                    <th>Table Type</th>
+                                    <th>Special Requests</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationsBody">
+                                <tr><td colspan="9" style="text-align:center">Loading reservations...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── INQUIRIES & MESSAGES TAB ───────────────────────────────── -->
+            <section class="admin-tab-pane" id="pane-messages">
+                <div class="pane-header">
+                    <div>
+                        <h2>Customer Inquiries</h2>
+                        <p>Feedback and contact messages submitted through the website</p>
+                    </div>
+                </div>
+
+                <div class="admin-card-box">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Sender</th>
+                                    <th>Email</th>
+                                    <th>Subject</th>
+                                    <th>Message</th>
+                                    <th>Received</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messagesBody">
+                                <tr><td colspan="7" style="text-align:center">Loading messages...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── CUSTOMERS TAB ──────────────────────────────────────────── -->
+            <section class="admin-tab-pane" id="pane-users">
+                <div class="pane-header">
+                    <div>
+                        <h2>Registered Customers</h2>
+                        <p>Directory of registered users and ordering activity</p>
+                    </div>
+                </div>
+
+                <div class="admin-card-box">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Customer Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Role</th>
+                                    <th>Total Orders</th>
+                                    <th>Total Spend</th>
+                                    <th>Joined Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersBody">
+                                <tr><td colspan="8" style="text-align:center">Loading customers...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ── MODALS ───────────────────────────────────────────────────────────── -->
+
+    <!-- Add/Edit Menu Item Modal -->
+    <div class="admin-modal" id="menuItemModal">
+        <div class="admin-modal-card">
+            <div class="admin-modal-header">
+                <h3 id="menuModalTitle"><i class="fas fa-utensils"></i> Add New Dish</h3>
+                <button class="modal-close-btn" onclick="closeModal('menuItemModal')">&times;</button>
+            </div>
+            <div class="admin-modal-body">
+                <input type="hidden" id="item_id">
+                <div class="form-row">
+                    <div class="form-group flex-2">
+                        <label>Dish Name *</label>
+                        <input type="text" id="item_name" placeholder="e.g. Truffle Burrata Pizza" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>Price ($) *</label>
+                        <input type="number" id="item_price" step="0.01" placeholder="14.99" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>Category *</label>
+                        <select id="item_category">
+                            <option value="pizza">Pizza</option>
+                            <option value="burger">Burger</option>
+                            <option value="sandwich">Sandwich</option>
+                            <option value="pasta">Pastas & Mains</option>
+                            <option value="starters">Starters & Snacks</option>
+                            <option value="desserts">Desserts & Drinks</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>Prep Time</label>
+                        <input type="text" id="item_prep" placeholder="e.g. 15-20 mins" value="15-20 mins">
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>Rating (1-5)</label>
+                        <input type="number" id="item_rating" step="0.1" min="1" max="5" value="4.8">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="text" id="item_image" placeholder="https://images.unsplash.com/... or /static/img/..." onchange="previewMenuImg(this.value)">
+                    <div class="img-preview-box">
+                        <img id="itemImgPreview" src="" alt="Dish Preview" style="display:none; max-height:100px; border-radius:8px; margin-top:8px;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea id="item_description" rows="3" placeholder="Describe the ingredients, flavors, and preparation..."></textarea>
+                </div>
+                <div class="form-checkbox-row">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="item_veg">
+                        <span>🌱 Vegetarian</span>
+                    </label>
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="item_spicy">
+                        <span>🌶️ Spicy</span>
+                    </label>
+                    <label class="custom-checkbox">
+                        <input type="checkbox" id="item_featured">
+                        <span>⭐ Chef's Special / Featured</span>
+                    </label>
+                </div>
+            </div>
+            <div class="admin-modal-footer">
+                <button class="btn-secondary" onclick="closeModal('menuItemModal')">Cancel</button>
+                <button class="btn-primary" id="saveMenuBtn" onclick="saveMenuItem()"><i class="fas fa-save"></i> Save Dish</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Detail Modal -->
+    <div class="admin-modal" id="adminOrderModal">
+        <div class="admin-modal-card" style="max-width:550px">
+            <div class="admin-modal-header">
+                <h3><i class="fas fa-receipt"></i> Order <span id="adminOrderDetailId">#0</span></h3>
+                <button class="modal-close-btn" onclick="closeModal('adminOrderModal')">&times;</button>
+            </div>
+            <div class="admin-modal-body" id="adminOrderModalContent">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="admin-modal-footer">
+                <button class="btn-secondary" onclick="closeModal('adminOrderModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast notification -->
+    <div class="toast" id="adminToast"></div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>

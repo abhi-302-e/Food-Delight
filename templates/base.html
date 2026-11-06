@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Foodie Delight – Gourmet Dining & Express Delivery{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Announcement Bar -->
+    <div class="top-announcement">
+        <div class="container announcement-inner">
+            <span>🔥 <strong>20% OFF</strong> your order with code <span class="promo-code-pill">WELCOME20</span></span>
+            <span class="delivery-time-badge"><i class="fas fa-bolt"></i> Average Delivery: <strong>25-35 mins</strong></span>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header>
+        <div class="container header-container">
+            <a href="/" class="logo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Foodie Delight Logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3075/3075977.png'">
+                <div class="logo-text">
+                    <h1>Foodie Delight</h1>
+                    <span class="tagline">Gourmet Kitchen &amp; Bar</span>
+                </div>
+            </a>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <nav id="mainNav">
+                <ul class="nav-links">
+                    <li><a href="/" {% if request.path=='/' %}class="active"{% endif %}><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="/menu" {% if request.path=='/menu' %}class="active"{% endif %}><i class="fas fa-utensils"></i> Menu</a></li>
+                    <li><a href="/reservations" {% if request.path=='/reservations' %}class="active"{% endif %}><i class="fas fa-calendar-alt"></i> Book a Table</a></li>
+                    <li><a href="/about" {% if request.path=='/about' %}class="active"{% endif %}><i class="fas fa-info-circle"></i> About</a></li>
+                    <li><a href="/contact" {% if request.path=='/contact' %}class="active"{% endif %}><i class="fas fa-envelope"></i> Contact</a></li>
+                    
+                    {% if user and user.role == 'admin' %}
+                    <li>
+                        <a href="/admin" class="nav-admin-badge">
+                            <i class="fas fa-shield-alt"></i> Admin Panel
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <li>
+                        <a href="#" id="cartLink" class="nav-cart-btn">
+                            <i class="fas fa-shopping-bag"></i> Cart
+                            <span class="cart-count">0</span>
+                        </a>
+                    </li>
+
+                    {% if user %}
+                    <li class="nav-user-menu">
+                        <a href="#" class="nav-user-btn">
+                            <i class="fas fa-user-circle"></i> {{ user.full_name.split()[0] }} <i class="fas fa-chevron-down" style="font-size:0.7rem"></i>
+                        </a>
+                        <div class="user-dropdown">
+                            <div class="dropdown-header">
+                                <strong>{{ user.full_name }}</strong>
+                                <small>{{ user.email }}</small>
+                            </div>
+                            <a href="/profile"><i class="fas fa-user"></i> My Profile</a>
+                            <a href="/orders"><i class="fas fa-receipt"></i> My Orders</a>
+                            <a href="/reservations"><i class="fas fa-calendar-check"></i> Bookings</a>
+                            {% if user.role == 'admin' %}
+                            <a href="/admin" style="color:var(--primary);font-weight:700"><i class="fas fa-shield-alt"></i> Admin Dashboard</a>
+                            {% endif %}
+                            <a href="/logout" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li><a href="/login" class="nav-login-btn {% if request.path=='/login' %}active{% endif %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                    <li><a href="/register" class="nav-register-btn {% if request.path=='/register' %}active{% endif %}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Page Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ── Cart Modal Drawer ────────────────────────────────────────────────── -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <div class="cart-header">
+                <h2><i class="fas fa-shopping-bag" style="color:var(--primary)"></i> Your Cart</h2>
+                <span class="close-btn" id="closeCart">&times;</span>
+            </div>
+            <div class="cart-body">
+                <div id="cartItems"><p class="empty-cart-message">Your cart is empty</p></div>
+                
+                <div class="cart-footer">
+                    <!-- Coupon input -->
+                    <div class="coupon-section">
+                        <div class="coupon-input-wrap">
+                            <input type="text" id="couponCodeInput" placeholder="Promo code (e.g. WELCOME20)">
+                            <button type="button" id="applyCouponBtn">Apply</button>
+                        </div>
+                        <div id="couponAppliedMsg" style="display:none;font-size:0.8rem;color:#16a34a;margin-top:6px;font-weight:600"></div>
+                    </div>
+
+                    <div class="cart-breakdown">
+                        <div class="breakdown-row"><span>Subtotal:</span><span>$<span id="cartSubtotal">0.00</span></span></div>
+                        <div class="breakdown-row" id="discountRow" style="display:none;color:#16a34a">
+                            <span>Promo Discount:</span><span>-$<span id="cartDiscount">0.00</span></span>
+                        </div>
+                        <div class="breakdown-row"><span>Delivery:</span><span><strong style="color:#16a34a">FREE</strong></span></div>
+                        <div class="cart-total"><h3>Total: $<span id="cartTotal">0.00</span></h3></div>
+                    </div>
+                    <button class="btn-primary checkout-btn" id="checkoutBtn"><i class="fas fa-check-circle"></i> Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Checkout Modal ───────────────────────────────────────────────────── -->
+    <div class="fd-modal" id="checkoutModal">
+        <div class="fd-modal-box">
+            <div class="fd-modal-header">
+                <h2><i class="fas fa-utensils"></i> Complete Your Delivery</h2>
+                <span class="close-btn" id="closeCheckout">&times;</span>
+            </div>
+            
+            <div class="order-summary" id="orderSummary"></div>
+
+            <div class="form-group">
+                <label>Full Name *</label>
+                <input type="text" id="co_name" value="{{ user.full_name if user else '' }}" placeholder="Your name">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="co_email" value="{{ user.email if user else '' }}" readonly style="background:#f8fafc">
+            </div>
+            <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="co_phone" value="{{ user.phone if user else '' }}" placeholder="+1 234 567 8900">
+            </div>
+            <div class="form-group">
+                <label>Delivery Address *</label>
+                <textarea id="co_address" placeholder="Apartment / Suite, Street Address, City">{{ user.address if user else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Special Instructions / Kitchen Notes</label>
+                <input type="text" id="co_notes" placeholder="e.g. Extra napkins, please leave at door">
+            </div>
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="co_payment">
+                    <option value="Cash on Delivery">💵 Cash on Delivery</option>
+                    <option value="Credit / Debit Card (On Delivery)">💳 Credit / Debit Card (On Delivery)</option>
+                    <option value="UPI / Online QR">📱 Online QR / Instant UPI</option>
+                </select>
+            </div>
+
+            <div class="checkout-btns">
+                <button class="btn-cancel" id="cancelCheckout">Back to Cart</button>
+                <button class="btn-confirm" id="confirmOrder"><i class="fas fa-check"></i> Confirm &amp; Place Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Bill Confirmation Modal ──────────────────────────────────────────── -->
+    <div class="fd-modal" id="billModal">
+        <div class="fd-modal-box" style="text-align:center;max-width:440px">
+            <div style="font-size:3.5rem;margin-bottom:12px">🎉</div>
+            <h2 style="color:#16a34a;margin-bottom:8px">Order Placed Successfully!</h2>
+            <p style="color:#64748b;margin-bottom:20px">Our master chefs have received your order and are preparing it fresh with passion.</p>
+            <div class="bill-order-id">Order ID: <span id="billOrderId">#---</span></div>
+            <div class="bill-actions">
+                <button class="btn-view-orders" onclick="window.location.href='/orders'"><i class="fas fa-receipt"></i> Track My Order</button>
+                <button class="btn-continue" id="closeBill">Continue Dining</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Login-required modal ─────────────────────────────────────────────── -->
+    <div class="fd-modal" id="loginRequiredModal">
+        <div class="fd-modal-box" style="text-align:center;max-width:400px">
+            <div style="font-size:3rem;margin-bottom:12px">🔒</div>
+            <h2 style="margin-bottom:8px">Please Sign In</h2>
+            <p style="color:#64748b;margin-bottom:24px">Sign in or create an account to place orders, track live status, and earn foodie rewards.</p>
+            <div class="bill-actions">
+                <a href="/login" class="btn-view-orders" style="text-decoration:none;display:inline-block;padding:12px 24px"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="/register" class="btn-continue" style="text-decoration:none;display:inline-block;padding:12px 24px">Create Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-utensils"></i>
+                        <h3>Foodie Delight</h3>
+                    </div>
+                    <p>Crafting unforgettable dining experiences with locally-sourced artisan ingredients and world-class culinary expertise.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Explore Menu</h3>
+                    <ul>
+                        <li><a href="/menu?category=pizza">Wood-Fired Pizzas</a></li>
+                        <li><a href="/menu?category=burger">Artisan Burgers</a></li>
+                        <li><a href="/menu?category=pasta">Handcrafted Pastas</a></li>
+                        <li><a href="/menu?category=sandwich">Gourmet Sandwiches</a></li>
+                        <li><a href="/menu?category=desserts">Decadent Desserts</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/menu">Full Menu</a></li>
+                        <li><a href="/reservations">Book a Table</a></li>
+                        <li><a href="/about">Our Story</a></li>
+                        <li><a href="/contact">Contact Us</a></li>
+                        {% if user and user.role == 'admin' %}
+                        <li><a href="/admin" style="color:var(--primary);font-weight:700">🛡️ Admin Portal</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Visit &amp; Connect</h3>
+                    <p><i class="fas fa-map-marker-alt" style="color:var(--primary)"></i> 123 Gourmet Boulevard, Food Delight Plaza</p>
+                    <p><i class="fas fa-phone-alt" style="color:var(--primary)"></i> +1 (800) 555-FOOD</p>
+                    <p><i class="fas fa-envelope" style="color:var(--primary)"></i> reservations@foodiedelight.com</p>
+                    <p><i class="fas fa-clock" style="color:var(--primary)"></i> Daily: 10:00 AM – 11:30 PM</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Foodie Delight Restaurant Group. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const IS_LOGGED_IN = {{ 'true' if user else 'false' }};
+        const CURRENT_USER_ROLE = "{{ user.role if user else 'guest' }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

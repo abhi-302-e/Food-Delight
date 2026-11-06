@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}My Profile – Foodie Delight{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div style="margin-bottom:28px">
+            <h1 style="font-size:2.2rem;margin-bottom:6px">My Account &amp; Profile</h1>
+            <p style="color:var(--text-muted)">Manage your personal details, delivery preferences, and security</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 320px 1fr; gap: 32px; align-items: start;">
+            <!-- Sidebar card -->
+            <div style="background:white; border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); text-align:center;">
+                <div style="width:76px; height:76px; border-radius:var(--radius-full); background:linear-gradient(135deg, var(--primary), #ff9800); color:white; font-size:2rem; font-weight:800; display:flex; align-items:center; justify-content:center; margin:0 auto 16px auto; box-shadow:0 6px 18px rgba(255,87,34,0.3)">
+                    {{ user.full_name[0].upper() }}
+                </div>
+                <h3 style="font-size:1.3rem; margin-bottom:4px">{{ user.full_name }}</h3>
+                <p style="color:var(--text-muted); font-size:0.88rem; margin-bottom:12px">{{ user.email }}</p>
+
+                <div style="display:inline-block; padding:4px 14px; border-radius:var(--radius-full); font-size:0.78rem; font-weight:700; margin-bottom:20px;
+                    {% if user.role == 'admin' %}background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;{% else %}background:#dcfce7; color:#15803d; border:1px solid #bbf7d0;{% endif %}">
+                    {% if user.role == 'admin' %}🛡️ Administrator{% else %}⭐ Active Foodie Member{% endif %}
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--border-color); padding-top:20px; text-align:left;">
+                    <a href="/orders" style="display:flex; align-items:center; gap:10px; font-weight:600; font-size:0.9rem; color:var(--dark-muted)">
+                        <i class="fas fa-receipt" style="color:var(--primary); width:20px"></i> View Past Orders
+                    </a>
+                    <a href="/reservations" style="display:flex; align-items:center; gap:10px; font-weight:600; font-size:0.9rem; color:var(--dark-muted)">
+                        <i class="fas fa-calendar-alt" style="color:var(--primary); width:20px"></i> My Table Bookings
+                    </a>
+                    {% if user.role == 'admin' %}
+                    <a href="/admin" style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:0.9rem; color:#2563eb">
+                        <i class="fas fa-shield-alt" style="color:#2563eb; width:20px"></i> Open Admin Portal
+                    </a>
+                    {% endif %}
+                    <a href="/logout" style="display:flex; align-items:center; gap:10px; font-weight:600; font-size:0.9rem; color:var(--danger); border-top:1px solid var(--border-color); padding-top:10px; margin-top:6px">
+                        <i class="fas fa-sign-out-alt" style="width:20px"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+            <!-- Edit form -->
+            <div style="background:white; border-radius:var(--radius-lg); padding:36px; box-shadow:var(--shadow-sm); border:1px solid var(--border-color);">
+                <h3 style="font-size:1.3rem; margin-bottom:20px; border-bottom:1px solid var(--border-color); padding-bottom:12px;">
+                    <i class="fas fa-user-edit" style="color:var(--primary)"></i> Update Profile Details
+                </h3>
+
+                <div id="profileSuccess" style="display:none; background:#dcfce7; color:#166534; padding:12px 18px; border-radius:var(--radius-sm); margin-bottom:18px; font-weight:600">
+                    ✅ Profile details updated successfully!
+                </div>
+                <div id="profileError" style="display:none" class="auth-error">
+                    <i class="fas fa-exclamation-circle"></i> <span id="profileErrorMsg"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" id="p_name" value="{{ user.full_name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" value="{{ user.email }}" readonly style="background:#f8fafc; color:var(--text-muted)">
+                    <small style="color:var(--text-muted)">Email address cannot be changed.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="p_phone" value="{{ user.phone or '' }}" placeholder="+1 234 567 8900">
+                </div>
+
+                <div class="form-group">
+                    <label>Default Delivery Address</label>
+                    <textarea id="p_address" rows="3" placeholder="Apartment / Suite, Street Address, City, Postal Code">{{ user.address or '' }}</textarea>
+                </div>
+
+                <button class="btn-primary" id="saveProfileBtn" style="margin-top:10px">
+                    <i class="fas fa-save"></i> Save Profile Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+    const full_name = document.getElementById('p_name').value.trim();
+    const phone     = document.getElementById('p_phone').value.trim();
+    const address   = document.getElementById('p_address').value.trim();
+    const successEl = document.getElementById('profileSuccess');
+    const errorEl   = document.getElementById('profileError');
+    const errMsg    = document.getElementById('profileErrorMsg');
+    const btn       = document.getElementById('saveProfileBtn');
+
+    successEl.style.display = 'none';
+    errorEl.style.display = 'none';
+
+    if (!full_name) {
+        errMsg.textContent = 'Name is required.';
+        errorEl.style.display = 'flex';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+    try {
+        const res = await fetch('/api/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name, phone, address })
+        });
+        const data = await res.json();
+        if (data.success) {
+            successEl.style.display = 'block';
+            showToast('Profile updated!', 'success');
+            setTimeout(() => successEl.style.display = 'none', 3000);
+        } else {
+            errMsg.textContent = data.error || 'Update failed.';
+            errorEl.style.display = 'flex';
+        }
+    } catch(e) {
+        errMsg.textContent = 'Network error.';
+        errorEl.style.display = 'flex';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-save"></i> Save Profile Changes';
+    }
+});
+</script>
+{% endblock %}

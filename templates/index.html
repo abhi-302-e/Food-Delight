@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block title %}Foodie Delight – Gourmet Dining &amp; Express Delivery{% endblock %}
+
+{% block content %}
+<!-- ── HERO SECTION ────────────────────────────────────────────────────────── -->
+<section class="hero-advanced">
+    <div class="container hero-container">
+        <div class="hero-text-col">
+            <div class="hero-badge"><i class="fas fa-award"></i> Award-Winning Gourmet Experience</div>
+            <h1 class="hero-title">Delicious Artistry Delivered to Your Doorstep</h1>
+            <p class="hero-desc">Indulge in handcrafted wood-fired pizzas, prime wagyu burgers, artisan pastas, and decadent desserts made fresh to order by world-class chefs.</p>
+            
+            <div class="hero-cta-group">
+                <a href="/menu" class="btn-primary hero-btn-main"><i class="fas fa-utensils"></i> Order Online Now</a>
+                <a href="/reservations" class="btn-secondary-hero"><i class="fas fa-calendar-alt"></i> Reserve a Table</a>
+            </div>
+
+            <div class="hero-trust-metrics">
+                <div class="trust-metric-item">
+                    <span class="trust-num">30<small>mins</small></span>
+                    <span class="trust-label">Express Delivery</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-metric-item">
+                    <span class="trust-num">33+</span>
+                    <span class="trust-label">Artisan Dishes</span>
+                </div>
+                <div class="trust-divider"></div>
+                <div class="trust-metric-item">
+                    <span class="trust-num">4.9<i class="fas fa-star" style="color:#f59e0b;font-size:0.9rem"></i></span>
+                    <span class="trust-label">15,000+ Reviews</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-media-col">
+            <div class="hero-img-card">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Gourmet Dishes" class="hero-main-img">
+                <div class="floating-dish-card top-float">
+                    <div class="float-icon">🔥</div>
+                    <div>
+                        <strong>Chef's Truffle Special</strong>
+                        <small>Freshly Baked to Order</small>
+                    </div>
+                </div>
+                <div class="floating-dish-card bottom-float">
+                    <div class="float-icon">🚀</div>
+                    <div>
+                        <strong>Free Express Delivery</strong>
+                        <small>On orders over $25</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── POPULAR CATEGORIES ──────────────────────────────────────────────────── -->
+<section class="section categories-section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-tag">Explore by Taste</span>
+            <h2>Our Culinary Categories</h2>
+            <p>From bubbling Neapolitan pizzas to sizzling smash burgers and silky pastas</p>
+        </div>
+
+        <div class="category-grid-advanced">
+            <a href="/menu?category=pizza" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=500&q=80" alt="Wood-Fired Pizza">
+                    <span class="cat-badge">6 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🍕</div>
+                    <h3>Wood-Fired Pizza</h3>
+                    <p>Neapolitan fermented crusts, San Marzano sauce, fresh mozzarella</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+
+            <a href="/menu?category=burger" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=500&q=80" alt="Artisan Burgers">
+                    <span class="cat-badge">6 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🍔</div>
+                    <h3>Artisan Burgers</h3>
+                    <p>Prime smashed Angus beef, brioche buns, and house-made truffle glazes</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+
+            <a href="/menu?category=pasta" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1645112411341-6c4fd023714a?auto=format&fit=crop&w=500&q=80" alt="Handcrafted Pasta">
+                    <span class="cat-badge">5 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🍝</div>
+                    <h3>Pasta &amp; Mains</h3>
+                    <p>Fresh extruded egg pastas, slow-braised sauces, and Atlantic salmon</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+
+            <a href="/menu?category=sandwich" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=500&q=80" alt="Gourmet Sandwiches">
+                    <span class="cat-badge">5 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🥪</div>
+                    <h3>Gourmet Sandwiches</h3>
+                    <p>Toasted sourdough, triple-decker clubs, and smoked salmon bagels</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+
+            <a href="/menu?category=starters" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=500&q=80" alt="Starters & Tapas">
+                    <span class="cat-badge">5 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🍟</div>
+                    <h3>Starters &amp; Tapas</h3>
+                    <p>Truffle parmesan fries, crispy buffalo wings, and calamari fritti</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+
+            <a href="/menu?category=desserts" class="cat-card">
+                <div class="cat-img-wrap">
+                    <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=500&q=80" alt="Desserts & Drinks">
+                    <span class="cat-badge">6 Varieties</span>
+                </div>
+                <div class="cat-content">
+                    <div class="cat-icon-symbol">🍰</div>
+                    <h3>Desserts &amp; Drinks</h3>
+                    <p>Warm molten lava cake, New York cheesecake, and refreshing mocktails</p>
+                    <span class="cat-arrow">Explore Menu &rarr;</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ── FEATURED CHEF SPECIALS ──────────────────────────────────────────────── -->
+<section class="section featured-section">
+    <div class="container">
+        <div class="section-heading-row">
+            <div>
+                <span class="section-tag">Chef's Selection</span>
+                <h2>Signature Special Dishes</h2>
+                <p>Curated master recipes crafted with exceptional ingredients</p>
+            </div>
+            <a href="/menu" class="btn-outline-pill">View Entire Menu &rarr;</a>
+        </div>
+
+        <div class="food-grid" id="featuredFoods">
+            <p style="color:#94a3b8; text-align:center; padding:40px 0;">Loading signature dishes...</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── WHY CHOOSE US ───────────────────────────────────────────────────────── -->
+<section class="section why-choose-section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-tag">Our Culinary Promise</span>
+            <h2>Why Food Lovers Choose Us</h2>
+            <p>We blend fine-dining culinary standards with lightning-fast neighborhood delivery</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-seedling"></i></div>
+                <h3>100% Fresh Local Produce</h3>
+                <p>We partner daily with regional farms to source crisp organic greens, heirloom tomatoes, and non-GMO meats.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-hat-chef"></i><i class="fas fa-mortar-pestle"></i></div>
+                <h3>Master Executive Chefs</h3>
+                <p>Every sauce, fermented dough, and patty is made from scratch with classical culinary precision.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-virus"></i></div>
+                <h3>Hygienic Sealed Packaging</h3>
+                <p>Custom thermal boxes ensure your dishes arrive steaming hot, crisp, and 100% tamper-evident.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-motorcycle"></i></div>
+                <h3>Real-Time Live Tracking</h3>
+                <p>Know exactly when your meal is cooking, being boxed, and arriving at your front door.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TABLE RESERVATIONS CALLOUT ─────────────────────────────────────────── -->
+<section class="section reservation-banner-section">
+    <div class="container">
+        <div class="reservation-banner-box">
+            <div class="res-text">
+                <span class="res-subtitle"><i class="fas fa-wine-glass-alt"></i> Dine With Us In Person</span>
+                <h2>Reserve a Table for Your Next Special Occasion</h2>
+                <p>Whether it's an intimate date night, family celebration, or corporate dinner, our ambient dining room and passionate service team are ready to host you.</p>
+                <div class="res-perks">
+                    <span><i class="fas fa-check-circle"></i> Instant Confirmation</span>
+                    <span><i class="fas fa-check-circle"></i> No Booking Fees</span>
+                    <span><i class="fas fa-check-circle"></i> Private Dining Available</span>
+                </div>
+                <a href="/reservations" class="btn-primary res-btn"><i class="fas fa-calendar-check"></i> Book Your Table Now</a>
+            </div>
+            <div class="res-img-side">
+                <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=700&q=80" alt="Restaurant Ambiance">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── CUSTOMER REVIEWS ────────────────────────────────────────────────────── -->
+<section class="section reviews-section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-tag">Testimonials</span>
+            <h2>What Our Foodies Say</h2>
+            <p>Over 15,000 delighted guests and counting</p>
+        </div>
+
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-quote">"The Truffle Wagyu burger is hands down the best burger in town. Arrived piping hot in 22 minutes. Absolutely unmatched flavor!"</p>
+                <div class="reviewer-meta">
+                    <div class="reviewer-avatar">S</div>
+                    <div>
+                        <strong>Sarah Jenkins</strong>
+                        <small>Verified Foodie · 18 Orders</small>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-quote">"The Margherita di Bufala tastes like you're sitting in a piazza in Naples. The crust has perfect leopard spots and the sauce is divine."</p>
+                <div class="reviewer-meta">
+                    <div class="reviewer-avatar">M</div>
+                    <div>
+                        <strong>Marco Rossi</strong>
+                        <small>Verified Foodie · 32 Orders</small>
+                    </div>
+                </div>
+            </div>
+            <div class="review-card">
+                <div class="stars">★★★★★</div>
+                <p class="review-quote">"We booked a table for our anniversary dinner. The staff welcomed us with complimentary dessert and the Slow-Cooked Bolognese was heavenly!"</p>
+                <div class="reviewer-meta">
+                    <div class="reviewer-avatar">D</div>
+                    <div>
+                        <strong>David &amp; Emily</strong>
+                        <small>Dine-In Guests</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/menu/featured')
+        .then(r => r.json())
+        .then(items => {
+            renderFoodGrid(items, 'featuredFoods');
+        })
+        .catch(err => {
+            console.error('Failed to load featured items:', err);
+        });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}Contact Us – Foodie Delight Gourmet Dining{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-tag"><i class="fas fa-headset"></i> We're Here For You</span>
+            <h2>Get In Touch With Our Team</h2>
+            <p>Have questions about private dining, catering events, or menu ingredients? Drop us a note!</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1.2fr 0.8fr; gap: 36px; align-items: start;">
+            <!-- Contact Form Card -->
+            <div style="background:white; border-radius:var(--radius-lg); padding:36px; box-shadow:var(--shadow-md); border:1px solid var(--border-color);">
+                <div id="contactSuccess" style="display:none; background:#dcfce7; color:#166534; padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:20px; font-weight:600;">
+                    <i class="fas fa-check-circle"></i> Thank you! Your message has been received. Our hospitality team will reply shortly.
+                </div>
+                <div id="contactError" style="display:none; background:#fee2e2; color:#991b1b; padding:14px 18px; border-radius:var(--radius-sm); margin-bottom:20px; font-weight:600;">
+                    <i class="fas fa-exclamation-circle"></i> <span id="contactErrorMsg"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group flex-1">
+                        <label>Your Name *</label>
+                        <input type="text" id="c_name" value="{{ user.full_name if user else '' }}" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group flex-1">
+                        <label>Email Address *</label>
+                        <input type="email" id="c_email" value="{{ user.email if user else '' }}" placeholder="you@example.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject / Topic</label>
+                    <select id="c_subject">
+                        <option value="General Inquiry">General Inquiry</option>
+                        <option value="Private Event & Catering">Private Event &amp; Catering</option>
+                        <option value="Feedback on Recent Order">Feedback on Recent Order</option>
+                        <option value="Dietary & Allergen Inquiries">Dietary &amp; Allergen Inquiries</option>
+                        <option value="Chef & Kitchen Collaboration">Chef &amp; Kitchen Collaboration</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Your Message *</label>
+                    <textarea id="c_message" rows="5" placeholder="How can we assist you today?" required></textarea>
+                </div>
+
+                <button class="btn-primary" id="sendContactBtn" style="width:100%; padding:14px;">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </div>
+
+            <!-- Contact Info Sidebar -->
+            <div style="display:flex; flex-direction:column; gap:20px;">
+                <div style="background:white; border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); border:1px solid var(--border-color);">
+                    <h3 style="margin-bottom:18px; font-size:1.2rem;"><i class="fas fa-map-marked-alt" style="color:var(--primary)"></i> Restaurant Headquarters</h3>
+                    <p style="margin-bottom:14px; font-size:0.9rem; color:var(--dark-muted)"><i class="fas fa-map-marker-alt" style="color:var(--primary); width:20px"></i> 123 Gourmet Boulevard, Food Delight Plaza</p>
+                    <p style="margin-bottom:14px; font-size:0.9rem; color:var(--dark-muted)"><i class="fas fa-phone-alt" style="color:var(--primary); width:20px"></i> +1 (800) 555-FOOD</p>
+                    <p style="margin-bottom:14px; font-size:0.9rem; color:var(--dark-muted)"><i class="fas fa-envelope" style="color:var(--primary); width:20px"></i> info@foodiedelight.com</p>
+                    <p style="font-size:0.9rem; color:var(--dark-muted)"><i class="fas fa-concierge-bell" style="color:var(--primary); width:20px"></i> Events: events@foodiedelight.com</p>
+                </div>
+
+                <div style="background:white; border-radius:var(--radius-lg); padding:30px; box-shadow:var(--shadow-sm); border:1px solid var(--border-color);">
+                    <h3 style="margin-bottom:18px; font-size:1.2rem;"><i class="fas fa-clock" style="color:var(--primary)"></i> Service &amp; Kitchen Hours</h3>
+                    <p style="font-size:0.88rem; color:var(--dark-muted); margin-bottom:8px"><strong>Monday – Thursday:</strong> 11:30 AM – 10:30 PM</p>
+                    <p style="font-size:0.88rem; color:var(--dark-muted); margin-bottom:8px"><strong>Friday:</strong> 11:30 AM – 11:30 PM</p>
+                    <p style="font-size:0.88rem; color:var(--dark-muted); margin-bottom:8px"><strong>Saturday:</strong> 11:00 AM – 11:30 PM</p>
+                    <p style="font-size:0.88rem; color:var(--dark-muted)"><strong>Sunday:</strong> 11:00 AM – 10:00 PM</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('sendContactBtn')?.addEventListener('click', async () => {
+    const name = document.getElementById('c_name').value.trim();
+    const email = document.getElementById('c_email').value.trim();
+    const subject = document.getElementById('c_subject').value;
+    const message = document.getElementById('c_message').value.trim();
+    const successBox = document.getElementById('contactSuccess');
+    const errorBox = document.getElementById('contactError');
+    const errorMsg = document.getElementById('contactErrorMsg');
+    const btn = document.getElementById('sendContactBtn');
+
+    successBox.style.display = 'none';
+    errorBox.style.display = 'none';
+
+    if (!name || !email || !message) {
+        errorMsg.textContent = 'Please fill out all required fields.';
+        errorBox.style.display = 'block';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending message...';
+
+    try {
+        const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, subject, message })
+        });
+        const data = await res.json();
+        if (data.success) {
+            successBox.style.display = 'block';
+            document.getElementById('c_message').value = '';
+            showToast('Message sent successfully! 📬', 'success');
+        } else {
+            errorMsg.textContent = data.error || 'Failed to send message.';
+            errorBox.style.display = 'block';
+        }
+    } catch(err) {
+        errorMsg.textContent = 'Network error while sending.';
+        errorBox.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+    }
+});
+</script>
+{% endblock %}

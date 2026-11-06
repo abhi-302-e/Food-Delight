@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% block title %}Book a Table – Foodie Delight Gourmet Dining{% endblock %}
+
+{% block content %}
+<section class="reservation-page">
+    <div class="container">
+        <!-- Hero Header -->
+        <div class="reservation-header">
+            <span class="section-tag"><i class="fas fa-utensils"></i> Exceptional Hospitality</span>
+            <h1>Reserve Your Dining Experience</h1>
+            <p>Join us for an exquisite dining atmosphere, handcrafted dishes, and curated wines.</p>
+        </div>
+
+        <div class="reservation-layout">
+            <!-- Booking Form Card -->
+            <div class="res-form-card">
+                <div class="res-card-top">
+                    <h2><i class="fas fa-calendar-check" style="color:var(--primary)"></i> Table Reservation Details</h2>
+                    <p>Instant confirmation with zero booking fees</p>
+                </div>
+
+                <div id="resSuccessBox" class="res-alert-success" style="display:none">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>Reservation Confirmed!</strong>
+                        <p id="resSuccessMsg">We look forward to welcoming you.</p>
+                    </div>
+                </div>
+
+                <div id="resErrorBox" class="res-alert-error" style="display:none">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="resErrorMsg"></span>
+                </div>
+
+                <form id="reservationForm" onsubmit="handleReservationSubmit(event)">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-user"></i> Full Name *</label>
+                            <input type="text" id="r_name" value="{{ user.full_name if user else '' }}" placeholder="e.g. John Doe" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-envelope"></i> Email Address *</label>
+                            <input type="email" id="r_email" value="{{ user.email if user else '' }}" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-phone-alt"></i> Phone Number *</label>
+                            <input type="tel" id="r_phone" value="{{ user.phone if user else '' }}" placeholder="+1 234 567 8900" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-users"></i> Number of Guests *</label>
+                            <select id="r_guests" required>
+                                <option value="1">1 Guest (Solo Dining)</option>
+                                <option value="2" selected>2 Guests (Romantic / Pair)</option>
+                                <option value="3">3 Guests</option>
+                                <option value="4">4 Guests (Standard Family Table)</option>
+                                <option value="5">5 Guests</option>
+                                <option value="6">6 Guests (Large Party)</option>
+                                <option value="8">8 Guests (Celebration Table)</option>
+                                <option value="10">10+ Guests (Private Area)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-calendar-day"></i> Reservation Date *</label>
+                            <input type="date" id="r_date" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-clock"></i> Preferred Time *</label>
+                            <select id="r_time" required>
+                                <optgroup label="Lunch Service">
+                                    <option value="12:00 PM">12:00 PM</option>
+                                    <option value="12:30 PM">12:30 PM</option>
+                                    <option value="1:00 PM">1:00 PM</option>
+                                    <option value="1:30 PM">1:30 PM</option>
+                                    <option value="2:00 PM">2:00 PM</option>
+                                </optgroup>
+                                <optgroup label="Dinner Service" selected>
+                                    <option value="6:00 PM">6:00 PM</option>
+                                    <option value="6:30 PM">6:30 PM</option>
+                                    <option value="7:00 PM" selected>7:00 PM</option>
+                                    <option value="7:30 PM">7:30 PM</option>
+                                    <option value="8:00 PM">8:00 PM</option>
+                                    <option value="8:30 PM">8:30 PM</option>
+                                    <option value="9:00 PM">9:00 PM</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-chair"></i> Seating Area Preference</label>
+                            <select id="r_table">
+                                <option value="Indoor Main Dining">Indoor Main Dining Room</option>
+                                <option value="Romantic Window Booth">Romantic Window Booth</option>
+                                <option value="Outdoor Garden Patio">Outdoor Garden Patio (Heated)</option>
+                                <option value="Private Dining Salon">Private Dining Salon</option>
+                                <option value="Chef's Open Counter">Chef's Open Kitchen Counter</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label><i class="fas fa-glass-cheers"></i> Special Occasion</label>
+                            <select id="r_occasion">
+                                <option value="Casual Dining">Casual Dining</option>
+                                <option value="Birthday Celebration">Birthday Celebration 🎂</option>
+                                <option value="Anniversary">Anniversary 🥂</option>
+                                <option value="Date Night">Romantic Date Night ✨</option>
+                                <option value="Business Dinner">Business Dinner 👔</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-comment-dots"></i> Special Dietary or Seating Notes</label>
+                        <textarea id="r_requests" rows="3" placeholder="e.g. Gluten-free guest in party, high chair requested, quiet booth preference..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-block-res" id="resSubmitBtn">
+                        <i class="fas fa-check-circle"></i> Confirm Table Reservation
+                    </button>
+                </form>
+            </div>
+
+            <!-- Restaurant Experience Sidebar -->
+            <div class="res-info-sidebar">
+                <div class="res-info-card">
+                    <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=700&q=80" alt="Dining Room" class="res-card-img">
+                    <h3>Atmosphere &amp; Hospitality</h3>
+                    <p>Designed with warm ambient lighting, plush seating, and acoustic comfort to make every dining moment unforgettable.</p>
+                    
+                    <div class="res-sidebar-details">
+                        <div class="res-detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <strong>Location</strong>
+                                <p>123 Gourmet Boulevard, Food Delight Plaza</p>
+                            </div>
+                        </div>
+                        <div class="res-detail-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <strong>Dining Hours</strong>
+                                <p>Mon – Fri: 11:30 AM – 11:00 PM<br>Sat – Sun: 11:00 AM – 11:30 PM</p>
+                            </div>
+                        </div>
+                        <div class="res-detail-item">
+                            <i class="fas fa-phone-alt"></i>
+                            <div>
+                                <strong>Direct Hostess Line</strong>
+                                <p>+1 (800) 555-FOOD ext. 2</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Guest Bookings (for logged in user) -->
+                {% if user %}
+                <div class="my-bookings-box" id="myBookingsBox">
+                    <h3><i class="fas fa-calendar-alt" style="color:var(--primary)"></i> My Table Bookings</h3>
+                    <div id="myBookingsList">
+                        <p style="color:#94a3b8;font-size:0.85rem">Loading your past reservations...</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Set default minimum date to today
+document.addEventListener('DOMContentLoaded', () => {
+    const dateInput = document.getElementById('r_date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+    }
+    {% if user %}
+    loadMyReservations();
+    {% endif %}
+});
+
+async function handleReservationSubmit(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('r_name').value.trim();
+    const email = document.getElementById('r_email').value.trim();
+    const phone = document.getElementById('r_phone').value.trim();
+    const guests = parseInt(document.getElementById('r_guests').value);
+    const reservation_date = document.getElementById('r_date').value;
+    const reservation_time = document.getElementById('r_time').value;
+    const table_type = document.getElementById('r_table').value;
+    const occasion = document.getElementById('r_occasion').value;
+    const notes = document.getElementById('r_requests').value.trim();
+    const special_requests = occasion + (notes ? ` - ${notes}` : '');
+
+    const btn = document.getElementById('resSubmitBtn');
+    const successBox = document.getElementById('resSuccessBox');
+    const errorBox = document.getElementById('resErrorBox');
+
+    successBox.style.display = 'none';
+    errorBox.style.display = 'none';
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reserving table...';
+
+    try {
+        const res = await fetch('/api/reservations', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customer_name: name,
+                customer_email: email,
+                customer_phone: phone,
+                guests,
+                reservation_date,
+                reservation_time,
+                table_type,
+                special_requests
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('resSuccessMsg').textContent = `Table booked for ${guests} guests on ${reservation_date} at ${reservation_time}! Booking #${data.booking_id}`;
+            successBox.style.display = 'flex';
+            showToast('Table reservation confirmed! 🎉', 'success');
+            document.getElementById('r_requests').value = '';
+            {% if user %}
+            loadMyReservations();
+            {% endif %}
+        } else {
+            document.getElementById('resErrorMsg').textContent = data.error || 'Failed to complete reservation.';
+            errorBox.style.display = 'flex';
+        }
+    } catch(err) {
+        document.getElementById('resErrorMsg').textContent = 'Network error while booking. Please try again.';
+        errorBox.style.display = 'flex';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Table Reservation';
+    }
+}
+
+async function loadMyReservations() {
+    const listEl = document.getElementById('myBookingsList');
+    if (!listEl) return;
+    try {
+        const res = await fetch('/api/reservations/my');
+        const bookings = await res.json();
+        if (!bookings.length) {
+            listEl.innerHTML = '<p style="color:#94a3b8;font-size:0.85rem">No reservations yet. Reserve your table above!</p>';
+            return;
+        }
+        listEl.innerHTML = bookings.map(b => `
+            <div class="user-res-item">
+                <div class="user-res-head">
+                    <strong>#${b.id} · ${b.guests} Guests</strong>
+                    <span class="status-badge status-${b.status}">${b.status}</span>
+                </div>
+                <p style="margin:4px 0;font-size:0.82rem;color:#475569"><i class="fas fa-calendar"></i> ${b.reservation_date} at ${b.reservation_time}</p>
+                <small style="color:#64748b"><i class="fas fa-chair"></i> ${b.table_type || 'Standard'}</small>
+            </div>
+        `).join('');
+    } catch(err) {
+        console.error('Failed to load user reservations:', err);
+    }
+}
+</script>
+{% endblock %}

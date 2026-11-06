@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}Explore Our Menu – Foodie Delight{% endblock %}
+
+{% block content %}
+<section class="menu-page-advanced">
+    <div class="container">
+        <!-- Page Header -->
+        <div class="menu-hero-header">
+            <span class="section-tag">Freshly Prepared Daily</span>
+            <h1>Our Culinary Menu</h1>
+            <p>Explore handcrafted wood-fired pizzas, prime burgers, fresh pastas, and artisanal desserts.</p>
+            
+            <!-- Live Search Bar -->
+            <div class="menu-search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" id="menuLiveSearch" placeholder="Search dishes, ingredients, flavors (e.g. Truffle, Pepperoni, Alfredo)...">
+                <button type="button" id="clearSearchBtn" class="clear-search-btn" style="display:none">&times;</button>
+            </div>
+        </div>
+
+        <!-- Filter & Control Bar -->
+        <div class="menu-controls-box">
+            <!-- Category Pills -->
+            <div class="category-pills-row" id="categoryPills">
+                <button class="cat-pill active" data-category="all"><i class="fas fa-border-all"></i> All Dishes</button>
+                <button class="cat-pill" data-category="pizza"><i class="fas fa-pizza-slice"></i> Pizzas</button>
+                <button class="cat-pill" data-category="burger"><i class="fas fa-hamburger"></i> Burgers</button>
+                <button class="cat-pill" data-category="pasta"><i class="fas fa-bowl-food"></i> Pastas &amp; Mains</button>
+                <button class="cat-pill" data-category="sandwich"><i class="fas fa-bread-slice"></i> Sandwiches</button>
+                <button class="cat-pill" data-category="starters"><i class="fas fa-cookie-bite"></i> Starters &amp; Tapas</button>
+                <button class="cat-pill" data-category="desserts"><i class="fas fa-ice-cream"></i> Desserts &amp; Drinks</button>
+            </div>
+
+            <!-- Dietary Filters & Sort Row -->
+            <div class="sub-controls-row">
+                <div class="dietary-filters" id="dietaryFilters">
+                    <span class="filter-label"><i class="fas fa-filter"></i> Filter:</span>
+                    <button class="diet-btn active" data-diet="all">All</button>
+                    <button class="diet-btn" data-diet="veg">🌱 Vegetarian</button>
+                    <button class="diet-btn" data-diet="spicy">🌶️ Spicy</button>
+                    <button class="diet-btn" data-diet="featured">⭐ Chef's Special</button>
+                </div>
+
+                <div class="sort-selector-wrap">
+                    <label for="sortSelector"><i class="fas fa-sort-amount-down"></i> Sort By:</label>
+                    <select id="sortSelector">
+                        <option value="default">Featured &amp; Recommended</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="rating">Highest Rated</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dishes Count -->
+        <div class="menu-status-bar">
+            <span id="menuCountText">Loading our master kitchen menu...</span>
+        </div>
+
+        <!-- Food Cards Grid -->
+        <div class="food-grid" id="menuFoodsGrid">
+            <!-- Dynamically populated -->
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentCategory = 'all';
+let currentDiet = 'all';
+let currentSort = 'default';
+let currentSearch = '';
+let searchDebounceTimer = null;
+
+async function loadMenuData() {
+    const grid = document.getElementById('menuFoodsGrid');
+    const countEl = document.getElementById('menuCountText');
+    if (!grid) return;
+
+    grid.innerHTML = '<div class="loading-spinner-wrap"><i class="fas fa-spinner fa-spin"></i><p>Cooking up dishes...</p></div>';
+
+    const params = new URLSearchParams({
+        category: currentCategory,
+        diet: currentDiet,
+        sort: currentSort,
+        search: currentSearch
+    });
+
+    try {
+        const res = await fetch('/api/menu?' + params.toString());
+        const items = await res.json();
+        
+        countEl.textContent = `Showing ${items.length} delicious ${items.length === 1 ? 'dish' : 'dishes'}`;
+        renderFoodGrid(items, 'menuFoodsGrid');
+    } catch(err) {
+        console.error('Menu load error:', err);
+        grid.innerHTML = '<p style="color:#ef4444;text-align:center;padding:40px">Failed to load menu items. Please try refreshing.</p>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Check URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const catParam = urlParams.get('category');
+    if (catParam) {
+        currentCategory = catParam;
+        document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
+            pill.classList.toggle('active', pill.dataset.category === catParam);
+        });
+    }
+
+    loadMenuData();
+
+    // Category pill click handler
+    document.querySelectorAll('#categoryPills .cat-pill').forEach(pill => {
+        pill.addEventListener('click', function() {
+            document.querySelectorAll('#categoryPills .cat-pill').forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.dataset.category;
+            loadMenuData();
+        });
+    });
+
+    // Dietary filter handler
+    document.querySelectorAll('#dietaryFilters .diet-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#dietaryFilters .diet-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentDiet = this.dataset.diet;
+            loadMenuData();
+        });
+    });
+
+    // Sort selector handler
+    document.getElementById('sortSelector')?.addEventListener('change', function() {
+        currentSort = this.value;
+        loadMenuData();
+    });
+
+    // Search bar handler with debounce
+    const searchInput = document.getElementById('menuLiveSearch');
+    const clearBtn = document.getElementById('clearSearchBtn');
+
+    searchInput?.addEventListener('input', function() {
+        const val = this.value.trim();
+        clearBtn.style.display = val ? 'block' : 'none';
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(() => {
+            currentSearch = val;
+            loadMenuData();
+        }, 280);
+    });
+
+    clearBtn?.addEventListener('click', function() {
+        searchInput.value = '';
+        currentSearch = '';
+        clearBtn.style.display = 'none';
+        loadMenuData();
+    });
+});
+</script>
+{% endblock %}

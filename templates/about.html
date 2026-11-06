@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Our Story &amp; Philosophy – Foodie Delight{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-tag"><i class="fas fa-heart"></i> Born From Culinary Passion</span>
+            <h2>The Foodie Delight Journey</h2>
+            <p>From a neighborhood wood-fired oven to a celebrated dining destination</p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:50px; align-items:center; margin-bottom:70px;">
+            <div>
+                <h3 style="font-size:1.8rem; margin-bottom:16px;">Rooted in Flavor, Elevated by Craft</h3>
+                <p style="color:var(--dark-muted); line-height:1.8; margin-bottom:16px;">
+                    Founded in 2025, <strong>Foodie Delight</strong> began with a single vision: to bridge the gap between fine dining artistry and effortless online convenience. We envisioned a kitchen where wood-fired pizzas are fermented for 48 hours, Wagyu burger patties are freshly ground daily, and pastas are hand-extruded every morning.
+                </p>
+                <p style="color:var(--dark-muted); line-height:1.8; margin-bottom:24px;">
+                    Today, our culinary team brings together decades of Michelin-starred background, working alongside regional farmers and organic producers to curate seasonal menus that celebrate pure, unadulterated taste.
+                </p>
+                <div style="display:flex; gap:20px;">
+                    <div>
+                        <strong style="font-size:2rem; color:var(--primary); display:block; font-family:'Playfair Display',serif;">100%</strong>
+                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Scratch-Made Daily</span>
+                    </div>
+                    <div style="width:1px; background:var(--border-color);"></div>
+                    <div>
+                        <strong style="font-size:2rem; color:var(--primary); display:block; font-family:'Playfair Display',serif;">48 hrs</strong>
+                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Fermented Dough</span>
+                    </div>
+                    <div style="width:1px; background:var(--border-color);"></div>
+                    <div>
+                        <strong style="font-size:2rem; color:var(--primary); display:block; font-family:'Playfair Display',serif;">4.9★</strong>
+                        <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Customer Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80" alt="Kitchen Team" style="width:100%; height:420px; object-fit:cover; border-radius:24px; box-shadow:var(--shadow-lg);">
+            </div>
+        </div>
+
+        <!-- Four Pillars Grid -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-carrot"></i></div>
+                <h3>Local &amp; Sustainable</h3>
+                <p>We source 90%+ of our vegetables and dairy from certified sustainable regional farm partners.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-fire-alt"></i></div>
+                <h3>Wood-Fired Tradition</h3>
+                <p>Authentic oak wood embers burning at 800°F give our Neapolitan pizzas their legendary smoky crust.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-award"></i></div>
+                <h3>Culinary Integrity</h3>
+                <p>No artificial preservatives, trans fats, or shortcuts. Pure ingredients treated with classical respect.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-users"></i></div>
+                <h3>Community First</h3>
+                <p>Committed to eco-friendly compostable packaging and active local community nourishment programs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
