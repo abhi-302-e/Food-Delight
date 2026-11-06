@@ -1,0 +1,36 @@
+name: Python Flask CI & Live Verification
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run Test Suite
+      run: |
+        python -c "
+        import app
+        client = app.app.test_client()
+        for p in ['/', '/menu', '/reservations', '/about', '/contact', '/login', '/register']:
+            assert client.get(p).status_code == 200, f'Route {p} failed'
+        m = client.get('/api/menu').get_json()
+        assert len(m) >= 30, f'Expected 30+ items, got {len(m)}'
+        print('All routes & APIs verified successfully!')
+        "
