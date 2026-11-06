@@ -6,3 +6,4 @@ services:
     startCommand: gunicorn wsgi:app
     plan: free
     autoDeploy: true
+

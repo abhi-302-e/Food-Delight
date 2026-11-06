@@ -614,6 +614,25 @@ def update_profile():
     session['user_name'] = full_name
     return jsonify({'success': True})
 
+@app.route('/api/profile/password', methods=['PUT'])
+@login_required
+def update_password():
+    data = request.get_json() or {}
+    old_pw = str(data.get('old_password', ''))
+    new_pw = str(data.get('new_password', ''))
+    confirm_pw = str(data.get('confirm_password', ''))
+    if len(new_pw) < 6:
+        return jsonify({'error': 'New password must be at least 6 characters'}), 400
+    if new_pw != confirm_pw:
+        return jsonify({'error': 'New passwords do not match'}), 400
+    u = current_user()
+    if not check_password_hash(u['password_hash'], old_pw):
+        return jsonify({'error': 'Current password is incorrect'}), 400
+    with get_db() as db:
+        db.execute('UPDATE users SET password_hash=? WHERE id=?', (generate_password_hash(new_pw), u['id']))
+        db.commit()
+    return jsonify({'success': True, 'message': 'Password updated successfully!'})
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # ─── ADMIN APIs ───────────────────────────────────────────────────────────────
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -808,8 +827,29 @@ def admin_users():
         ''').fetchall()
     return jsonify([dict(u) for u in users])
 
+def is_streamlit_running():
+    try:
+        import streamlit as st
+        try:
+            from streamlit.runtime.scriptrunner import get_script_run_ctx
+            if get_script_run_ctx() is not None:
+                return True
+        except Exception:
+            pass
+        if any('streamlit' in str(arg).lower() for arg in sys.argv):
+            return True
+        if any(k.startswith('STREAMLIT') for k in os.environ.keys()):
+            return True
+        return False
+    except ImportError:
+        return False
+
 # Auto-initialize database tables and seed data on load
 init_db()
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+if is_streamlit_running():
+    import st_ui
+    st_ui.render_streamlit_interface(DB_PATH)
+elif __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
