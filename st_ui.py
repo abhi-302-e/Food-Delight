@@ -492,3 +492,4 @@ def render_streamlit_interface(db_path):
                             (c_name, c_email, c_subj, c_msg, "unread", now_str)
                         )
                     st.success("Thank you! Your message has been sent to our team.")
+
