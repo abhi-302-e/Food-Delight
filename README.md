@@ -9,7 +9,7 @@
 
 ---
 
-## ✨ Key Upgrades & Features
+## ✨ Key Upgrades & Features. 
 
 ### 🛡️ 1. Executive Admin Management Console (`/admin`)
 - **Real-Time KPI Dashboard**: Live stats tracking total revenue ($), total orders, pending orders, delivered orders, active dishes, table bookings, registered customers, and unread inquiries.
