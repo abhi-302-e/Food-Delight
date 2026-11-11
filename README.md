@@ -1,4 +1,4 @@
-# 🍽️ Foodie Delight – Advanced Gourmet Restaurant Platform
+# 🍽️ Foodie Delight – Advanced Gourmet Restaurant Platform.
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.1%2B-black.svg)](https://flask.palletsprojects.com/)
